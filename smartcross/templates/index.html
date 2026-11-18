@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartCross AI | Mobilidade Urbana Inteligente</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+  <script defer src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</head>
+<body>
+<header class="top"><div class="brand"><span class="mark" aria-hidden="true">▥</span><div><strong>SMARTCROSS <em>AI</em></strong><small>Mobilidade Urbana Inteligente</small></div></div>
+  <div class="header-status"><span id="system">Conectando</span><span id="source-label">Simulação</span></div>
+</header>
+<main>
+  <div class="intro"><div><h1>Painel de monitoramento</h1><p>Presença na zona de espera e iluminação virtual da faixa.</p></div><span class="pill">Protótipo acadêmico · FIAP</span></div>
+  <div id="notice" role="status" hidden></div>
+  <section class="metrics" aria-label="Indicadores">
+    <div><small>Pessoas identificadas</small><strong id="people">0</strong></div>
+    <div><small>Pessoas na ROI</small><strong id="inside">0</strong></div>
+    <div><small>Ativações registradas</small><strong id="total">0</strong></div>
+    <div><small>Tempo da ativação</small><strong id="elapsed">0,0 s</strong></div>
+    <div><small>FPS de processamento</small><strong id="fps">—</strong></div>
+  </section>
+  <div class="grid">
+    <section class="panel">
+      <div class="heading"><h2>Monitor de visão</h2><span id="mode" class="pill">SIMULAÇÃO</span></div>
+      <div id="monitor">
+        <canvas id="scene" width="800" height="450" aria-label="Cena virtual com zona de espera e presença simulada"></canvas>
+        <img id="stream" alt="Imagens processadas com caixas de detecção e zona de espera" hidden>
+        <div id="placeholder" hidden>Aguardando imagens da fonte selecionada</div>
+      </div>
+      <div class="monitor-footer"><span id="summary">Zona vazia</span><label id="control">Pessoas na zona
+        <select id="count" disabled><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      </label></div>
+    </section>
+    <section class="panel">
+      <div class="heading"><h2>Faixa inteligente</h2><span id="phase" class="pill">INATIVA</span></div>
+      <div id="crossing" aria-label="Faixa vista de cima com LEDs virtuais">
+        <div class="lane"></div><div class="leds"></div><div class="stripes"></div><div class="leds"></div>
+      </div>
+      <p class="note">LEDs virtuais · A iluminação representa presença na zona de espera. Ela não autoriza a travessia.</p>
+    </section>
+  </div>
+  <section class="panel configuration">
+    <div class="heading"><h2>Configurações</h2></div>
+    <form id="source-form">
+      <div class="fields">
+        <label>Fonte de vídeo<select id="source"><option value="simulation">Simulação</option><option value="webcam">Webcam</option><option value="video">Vídeo local</option></select></label>
+        <label id="camera-field" hidden>Índice da câmera<select id="camera">{% for index in range(10) %}<option value="{{ index }}">Câmera {{ index }}</option>{% endfor %}</select></label>
+        <label id="file-field" hidden>Arquivo MP4 (até 200 MiB)<input id="file" type="file" accept="video/mp4,.mp4"></label>
+      </div>
+      <div class="actions"><button id="start">Iniciar análise</button><button type="button" id="stop" class="secondary" disabled>Parar</button></div>
+    </form>
+    <form id="settings">
+      <div class="fields">
+        <label>Confiança mínima<input name="confidence" type="number" min=".05" max=".99" step=".01" required></label>
+        <label>Confirmação (s)<input name="confirmation" type="number" min=".1" max="10" step=".1" required></label>
+        <label>Retenção (s)<input name="hold" type="number" min="0" max="30" step=".1" required></label>
+      </div>
+      <fieldset><legend>Zona de espera (ROI · 0 a 1)</legend><div class="fields roi">
+        <label>Posição X<input name="x" type="number" min="0" max="1" step=".01" required></label>
+        <label>Posição Y<input name="y" type="number" min="0" max="1" step=".01" required></label>
+        <label>Largura<input name="width" type="number" min=".01" max="1" step=".01" required></label>
+        <label>Altura<input name="height" type="number" min=".01" max="1" step=".01" required></label>
+      </div></fieldset>
+      <button class="secondary">Aplicar parâmetros</button>
+    </form>
+  </section>
+  <div class="grid bottom">
+    <section class="panel"><div class="heading"><h2>Ativações por horário</h2><span class="pill">Últimas 24 horas</span></div>
+      <div id="chart" aria-label="Gráfico de ativações nas últimas 24 horas"></div><div id="chart-labels"></div>
+    </section>
+    <section class="panel"><div class="heading"><h2>Eventos recentes</h2></div><div id="events" class="events">Nenhum evento registrado.</div></section>
+  </div>
+  <footer>SMARTCROSS AI · Global Solution FIAP · Processamento local</footer>
+</main>
+</body>
+</html>
